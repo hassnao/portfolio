@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex Morgan — Mobile App Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #111119;
+    --bg-card: #16161f;
+    --bg-card-hover: #1c1c28;
+    --accent: #6cff7c;
+    --accent-dim: rgba(108, 255, 124, 0.12);
+    --accent-glow: rgba(108, 255, 124, 0.3);
+    --text-primary: #e8e8f0;
+    --text-secondary: #8888a0;
+    --text-muted: #55556a;
+    --border: rgba(255,255,255,0.06);
+    --border-accent: rgba(108, 255, 124, 0.2);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg-secondary);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ==================== CURSOR GLOW ==================== */
+  .cursor-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(108,255,124,0.04) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    transition: left 0.3s ease, top 0.3s ease;
+  }
+
+  /* ==================== NAVBAR ==================== */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.4s ease;
+  }
+
+  nav.scrolled {
+    padding: 14px 60px;
+    background: rgba(10, 10, 15, 0.92);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: color 0.3s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    background: var(--accent) !important;
+    color: var(--bg-primary) !important;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85rem !important;
+    transition: transform 0.3s, box-shadow 0.3s !important;
+  }
+
+  .nav-cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  .nav-cta::after { display: none !important; }
+
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 1001;
+  }
+
+  .menu-toggle span {
+    width: 28px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: all 0.3s ease;
+  }
+
+  /* ==================== HERO ==================== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 140px 60px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 20%, transparent 100%);
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: orbFloat 12s ease-in-out infinite;
+  }
+
+  .hero-orb-1 {
+    width: 500px; height: 500px;
+    background: rgba(108, 255, 124, 0.15);
+    top: -10%; right: -5%;
+  }
+
+  .hero-orb-2 {
+    width: 350px; height: 350px;
+    background: rgba(80, 120, 255, 0.12);
+    bottom: 5%; left: -5%;
+    animation-delay: -4s;
+  }
+
+  .hero-orb-3 {
+    width: 200px; height: 200px;
+    background: rgba(200, 100, 255, 0.1);
+    top: 40%; left: 40%;
+    animation-delay: -8s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+  }
+
+  .hero-content {
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: var(--accent-dim);
+    border: 1px solid var(--border-accent);
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 32px;
+    animation: fadeSlideUp 0.8s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-badge .dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 28px;
+    animation: fadeSlideUp 0.8s ease 0.15s forwards;
+    opacity: 0;
+  }
+
+  .hero h1 .line { display: block; }
+
+  .hero h1 .highlight {
+    background: linear-gradient(135deg, var(--accent), #40e0d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 560px;
+    line-height: 1.8;
+    margin-bottom: 44px;
+    animation: fadeSlideUp 0.8s ease 0.3s forwards;
+    opacity: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    animation: fadeSlideUp 0.8s ease 0.45s forwards;
+    opacity: 0;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 60px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px var(--accent-glow);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 60px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 72px;
+    animation: fadeSlideUp 0.8s ease 0.6s forwards;
+    opacity: 0;
+  }
+
+  .stat-item {
+    position: relative;
+    padding-left: 16px;
+  }
+
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 4px;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ==================== FLOATING PHONE MOCKUP ==================== */
+  .hero-visual {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    animation: fadeSlideUp 1s ease 0.5s forwards, floatPhone 6s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes floatPhone {
+    0%, 100% { transform: translateY(-50%) rotate(-2deg); }
+    50% { transform: translateY(calc(-50% - 15px)) rotate(1deg); }
+  }
+
+  .phone-mockup {
+    width: 260px;
+    height: 530px;
+    background: var(--bg-card);
+    border-radius: 36px;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px var(--accent-dim);
+  }
+
+  .phone-notch {
+    width: 120px;
+    height: 28px;
+    background: var(--bg-primary);
+    border-radius: 0 0 18px 18px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+  }
+
+  .phone-screen {
+    padding: 16px;
+  }
+
+  .phone-app-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .phone-app-bar span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .phone-dots { display: flex; gap: 3px; }
+  .phone-dots span {
+    width: 4px; height: 4px;
+    background: var(--text-muted);
+    border-radius: 50%;
+  }
+
+  .phone-card {
+    background: var(--bg-primary);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .phone-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .phone-card-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .phone-card-badge {
+    font-size: 0.55rem;
+    padding: 3px 8px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-radius: 50px;
+    font-weight: 600;
+  }
+
+  .phone-bar-chart {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 60px;
+  }
+
+  .phone-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--accent), rgba(108,255,124,0.2));
+    border-radius: 4px 4px 0 0;
+    animation: barGrow 1.5s ease forwards;
+    transform-origin: bottom;
+  }
+
+  @keyframes barGrow {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+
+  .phone-card-sm {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phone-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+
+  .phone-icon-green { background: var(--accent-dim); }
+  .phone-icon-blue { background: rgba(80,120,255,0.12); }
+  .phone-icon-purple { background: rgba(200,100,255,0.12); }
+
+  .phone-text-sm {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+  }
+
+  .phone-text-sm strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.72rem;
+  }
+
+  /* ==================== SECTIONS COMMON ==================== */
+  section {
+    padding: 120px 60px;
+    position: relative;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .section-label::before {
+    content: '//';
+    opacity: 0.5;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    line-height: 1.1;
+  }
+
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 60px;
+  }
+
+  /* ==================== SERVICES ==================== */
+  .services { background: var(--bg-secondary); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .service-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), #40e0d0);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .service-card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .service-card:hover::before { opacity: 1; }
+
+  .service-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .service-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .service-card p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .service-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .service-tag {
+    padding: 5px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ==================== PROJECTS ==================== */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+  }
+
+  .project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border-color: var(--border-accent);
+  }
+
+  .project-image {
+    height: 260px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-image-bg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .project-gradient-1 {
+    background: linear-gradient(135deg, #1a1a3e, #0d2f23);
+  }
+
+  .project-gradient-2 {
+    background: linear-gradient(135deg, #1a0d2e, #2d1a1a);
+  }
+
+  .project-gradient-3 {
+    background: linear-gradient(135deg, #0d1f3e, #1a2a1a);
+  }
+
+  .project-gradient-4 {
+    background: linear-gradient(135deg, #2e1a0d, #1a1a2e);
+  }
+
+  .project-mockup {
+    width: 180px;
+    height: 360px;
+    background: var(--bg-primary);
+    border-radius: 28px;
+    border: 2px solid rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+    transform: perspective(800px) rotateY(-8deg) rotateX(5deg);
+    transition: transform 0.6s ease;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+
+  .project-card:hover .project-mockup {
+    transform: perspective(800px) rotateY(0deg) rotateX(0deg);
+  }
+
+  .mockup-inner {
+    padding: 30px 12px 12px;
+  }
+
+  .mockup-bar {
+    height: 6px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+  }
+
+  .mockup-bar-1 { width: 60%; background: var(--accent); opacity: 0.6; }
+  .mockup-bar-2 { width: 80%; background: rgba(255,255,255,0.08); }
+  .mockup-bar-3 { width: 45%; background: rgba(255,255,255,0.05); }
+
+  .mockup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .mockup-block {
+    height: 45px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .mockup-block-accent {
+    background: var(--accent-dim);
+    border-color: var(--border-accent);
+  }
+
+  .project-info {
+    padding: 28px 32px;
+  }
+
+  .project-platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .project-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+
+  .project-info p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .project-tech span {
+    padding: 5px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ==================== SKILLS ==================== */
+  .skills { background: var(--bg-secondary); }
+
+  .skills-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .skill-category {
+    margin-bottom: 40px;
+  }
+
+  .skill-category h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .skill-chip {
+    padding: 10px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skill-chip:hover {
+    border-color: var(--border-accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+    transform: translateY(-2px);
+  }
+
+  .skill-chip .skill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* Code Terminal */
+  .code-terminal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+  }
+
+  .terminal-dot-red { background: #ff5f57; }
+  .terminal-dot-yellow { background: #ffbd2e; }
+  .terminal-dot-green { background: #28c840; }
+
+  .terminal-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-left: 10px;
+  }
+
+  .terminal-body {
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 2;
+    color: var(--text-secondary);
+  }
+
+  .terminal-body .key { color: #c792ea; }
+  .terminal-body .str { color: var(--accent); }
+  .terminal-body .num { color: #f78c6c; }
+  .terminal-body .bracket { color: var(--text-muted); }
+  .terminal-body .comment { color: var(--text-muted); font-style: italic; }
+
+  /* ==================== EXPERIENCE TIMELINE ==================== */
+  .timeline {
+    max-width: 800px;
+    position: relative;
+    margin-top: 20px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--border));
+  }
+
+  .timeline-item {
+    padding-left: 40px;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg-primary);
+  }
+
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .timeline-item h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+
+  .timeline-company {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .timeline-item p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  /* ==================== TESTIMONIALS ==================== */
+  .testimonials { background: var(--bg-secondary); }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .testimonial-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    transition: all 0.3s ease;
+  }
+
+  .testimonial-card:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-4px);
+  }
+
+  .testimonial-stars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    color: #fbbf24;
+    font-size: 0.9rem;
+  }
+
+  .testimonial-text {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .testimonial-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--bg-primary);
+  }
+
+  .testimonial-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .testimonial-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  /* ==================== CONTACT ==================== */
+  .contact-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .contact-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+  }
+
+  .contact-info > p {
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+
+  .contact-channels {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contact-channel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+  }
+
+  .contact-channel:hover {
+    border-color: var(--border-accent);
+    background: var(--bg-card-hover);
+  }
+
+  .contact-channel-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .contact-channel-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .contact-channel-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .contact-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.92rem;
+    transition: border-color 0.3s;
+    outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--accent);
+  }
+
+  .form-group textarea {
+    height: 120px;
+    resize: vertical;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+  }
+
+  .form-submit:hover {
+    box-shadow: 0 8px 40px var(--accent-glow);
+    transform: translateY(-2px);
+  }
+
+  /* ==================== FOOTER ==================== */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-primary);
+  }
+
+  .footer-copy {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-social {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+
+  .footer-social:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+    transform: translateY(-2px);
+  }
+
+  /* ==================== SCROLL REVEAL ==================== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 1100px) {
+    .hero-visual { display: none; }
+    .hero-content { max-width: 100%; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 28px; }
+    section { padding: 80px 28px; }
+    .hero { padding: 120px 28px 80px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .skills-container { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .contact-wrapper { grid-template-columns: 1fr; }
+    footer { padding: 28px; flex-direction: column; gap: 16px; }
+    .hero-stats { gap: 28px; flex-wrap: wrap; }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .menu-toggle { display: flex; }
+
+    .nav-links.active {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      z-index: 999;
+    }
+
+    .nav-links.active a {
+      font-size: 1.3rem;
+    }
+
+    .hero h1 { letter-spacing: -1px; }
+    .form-row { grid-template-columns: 1fr; }
+    .project-image { height: 200px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor Glow -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav id="navbar">
+  <a href="#" class="logo">alex<span>.</span>dev</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact" class="nav-cta">Let's Talk</a></li>
+  </ul>
+  <div class="menu-toggle" id="menuToggle" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Available for new projects
+    </div>
+    <h1>
+      <span class="line">I build <span class="highlight">mobile</span></span>
+      <span class="line">experiences that</span>
+      <span class="line">users <span class="highlight">love.</span></span>
+    </h1>
+    <p class="hero-desc">
+      Full-stack mobile developer specializing in Android & iOS.
+      I craft pixel-perfect, performant apps from concept to deployment —
+      turning complex problems into elegant solutions.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">
+        View My Work
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#contact" class="btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Get In Touch
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">6+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">50+</div>
+        <div class="stat-label">Apps Delivered</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2M+</div>
+        <div class="stat-label">Downloads</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">35+</div>
+        <div class="stat-label">Happy Clients</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Phone Mockup -->
+  <div class="hero-visual">
+    <div class="phone-mockup">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-app-bar">
+          <span>Dashboard</span>
+          <div class="phone-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="phone-card">
+          <div class="phone-card-header">
+            <span class="phone-card-title">Weekly Analytics</span>
+            <span class="phone-card-badge">+24%</span>
+          </div>
+          <div class="phone-bar-chart">
+            <div class="phone-bar" style="height:35%"></div>
+            <div class="phone-bar" style="height:55%"></div>
+            <div class="phone-bar" style="height:45%"></div>
+            <div class="phone-bar" style="height:78%"></div>
+            <div class="phone-bar" style="height:65%"></div>
+            <div class="phone-bar" style="height:90%"></div>
+            <div class="phone-bar" style="height:70%"></div>
+          </div>
+        </div>
+        <div class="phone-card-sm">
+          <div class="phone-icon phone-icon-green">📱</div>
+          <div class="phone-text-sm"><strong>Active Users</strong>12,847 today</div>
+        </div>
+        <div class="phone-card-sm">
+          <div class="phone-icon phone-icon-blue">⚡</div>
+          <div class="phone-text-sm"><strong>Performance</strong>99.8% uptime</div>
+        </div>
+        <div class="phone-card-sm">
+          <div class="phone-icon phone-icon-purple">⭐</div>
+          <div class="phone-text-sm"><strong>Store Rating</strong>4.9 average</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SERVICES ==================== -->
+<section class="services" id="services">
+  <div class="reveal">
+    <div class="section-label">What I Do</div>
+    <h2 class="section-title">Services & Expertise</h2>
+    <p class="section-desc">End-to-end mobile development from architecture to App Store — I handle every layer of the stack so you can focus on your vision.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-icon" style="background: var(--accent-dim);">
+        <svg width="28" height="28" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+      </div>
+      <h3>Android Development</h3>
+      <p>Native Android apps built with Kotlin and Jetpack Compose. Clean architecture, MVVM patterns, and buttery-smooth 60fps animations.</p>
+      <div class="service-tags">
+        <span class="service-tag">Kotlin</span>
+        <span class="service-tag">Jetpack Compose</span>
+        <span class="service-tag">Material 3</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon" style="background: rgba(80,120,255,0.12);">
+        <svg width="28" height="28" fill="none" stroke="#5078ff" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+      </div>
+      <h3>iOS Development</h3>
+      <p>Premium iOS experiences with Swift and SwiftUI. From iPhone to iPad and Apple Watch — pixel-perfect on every Apple device.</p>
+      <div class="service-tags">
+        <span class="service-tag">Swift</span>
+        <span class="service-tag">SwiftUI</span>
+        <span class="service-tag">UIKit</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon" style="background: rgba(200,100,255,0.12);">
+        <svg width="28" height="28" fill="none" stroke="#c864ff" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>Cross-Platform</h3>
+      <p>Shared codebases with React Native and Flutter. Ship to both platforms simultaneously without compromising native feel.</p>
+      <div class="service-tags">
+        <span class="service-tag">React Native</span>
+        <span class="service-tag">Flutter</span>
+        <span class="service-tag">Dart</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon" style="background: rgba(255,160,60,0.12);">
+        <svg width="28" height="28" fill="none" stroke="#ffa03c" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <h3>Backend & APIs</h3>
+      <p>Scalable backends with Node.js, Firebase, and cloud infrastructure. Real-time data, authentication, and seamless integrations.</p>
+      <div class="service-tags">
+        <span class="service-tag">Node.js</span>
+        <span class="service-tag">Firebase</span>
+        <span class="service-tag">AWS</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon" style="background: rgba(255,80,80,0.12);">
+        <svg width="28" height="28" fill="none" stroke="#ff5050" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <h3>UI/UX Design</h3>
+      <p>Research-driven design with Figma prototyping. Intuitive interfaces, micro-interactions, and design systems that scale.</p>
+      <div class="service-tags">
+        <span class="service-tag">Figma</span>
+        <span class="service-tag">Prototyping</span>
+        <span class="service-tag">Design Systems</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon" style="background: rgba(60,220,200,0.12);">
+        <svg width="28" height="28" fill="none" stroke="#3cdcc8" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+      </div>
+      <h3>App Store Strategy</h3>
+      <p>ASO, analytics, and growth. From beta testing to launch day and beyond — data-driven strategies that get your app ranked.</p>
+      <div class="service-tags">
+        <span class="service-tag">ASO</span>
+        <span class="service-tag">Analytics</span>
+        <span class="service-tag">CI/CD</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROJECTS ==================== -->
+<section class="projects" id="projects">
+  <div class="reveal">
+    <div class="section-label">Featured Work</div>
+    <h2 class="section-title">Selected Projects</h2>
+    <p class="section-desc">A curated selection of apps I've designed, developed, and shipped across both mobile platforms.</p>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-image">
+        <div class="project-image-bg project-gradient-1">
+          <div class="project-mockup">
+            <div class="mockup-inner">
+              <div class="mockup-bar mockup-bar-1"></div>
+              <div class="mockup-bar mockup-bar-2"></div>
+              <div class="mockup-bar mockup-bar-3"></div>
+              <div class="mockup-grid">
+                <div class="mockup-block mockup-block-accent"></div>
+                <div class="mockup-block"></div>
+                <div class="mockup-block"></div>
+                <div class="mockup-block mockup-block-accent"></div>
+              </div>
+              <div style="margin-top:8px">
+                <div class="mockup-bar mockup-bar-2"></div>
+                <div class="mockup-bar mockup-bar-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="project-info">
+        <div class="project-platform">📱 iOS & Android</div>
+        <h3>FinFlow — Banking App</h3>
+        <p>A modern digital banking experience with biometric auth, real-time transactions, and investment tracking for 500K+ users.</p>
+        <div class="project-tech">
+          <span>Swift</span><span>Kotlin</span><span>Node.js</span><span>PostgreSQL</span>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-image">
+        <div class="project-image-bg project-gradient-2">
+          <div class="project-mockup">
+            <div class="mockup-inner">
+              <div class="mockup-bar mockup-bar-1" style="background:#c864ff;"></div>
+              <div class="mockup-bar mockup-bar-2"></div>
+              <div style="height:70px;border-radius:12px;background:rgba(200,100,255,0.1);border:1px solid rgba(200,100,255,0.15);margin-top:10px;"></div>
+              <div class="mockup-grid" style="margin-top:8px;">
+                <div class="mockup-block" style="background:rgba(200,100,255,0.08);border-color:rgba(200,100,255,0.12);"></div>
+                <div class="mockup-block"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="project-info">
+        <div class="project-platform">📱 iOS</div>
+        <h3>MindSpace — Meditation</h3>
+        <p>AI-powered meditation & mindfulness app with personalized sessions, sleep stories, and mood tracking analytics.</p>
+        <div class="project-tech">
+          <span>SwiftUI</span><span>CoreML</span><span>Firebase</span><span>CloudKit</span>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-image">
+        <div class="project-image-bg project-gradient-3">
+          <div class="project-mockup">
+            <div class="mockup-inner">
+              <div class="mockup-bar mockup-bar-1" style="background:#5078ff;"></div>
+              <div class="mockup-bar mockup-bar-2"></div>
+              <div class="mockup-bar mockup-bar-3"></div>
+              <div style="display:flex;gap:6px;margin-top:10px;">
+                <div style="flex:1;height:80px;border-radius:10px;background:rgba(80,120,255,0.08);border:1px solid rgba(80,120,255,0.12);"></div>
+                <div style="flex:1;height:80px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="project-info">
+        <div class="project-platform">📱 Android</div>
+        <h3>TrackFit — Fitness Tracker</h3>
+        <p>Comprehensive fitness companion with workout planning, GPS running, wearable sync, and social challenges system.</p>
+        <div class="project-tech">
+          <span>Kotlin</span><span>Compose</span><span>Room</span><span>Health Connect</span>
+        </div>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-image">
+        <div class="project-image-bg project-gradient-4">
+          <div class="project-mockup">
+            <div class="mockup-inner">
+              <div class="mockup-bar mockup-bar-1" style="background:#ffa03c;"></div>
+              <div class="mockup-bar mockup-bar-2"></div>
+              <div class="mockup-grid">
+                <div class="mockup-block" style="background:rgba(255,160,60,0.08);border-color:rgba(255,160,60,0.12);height:55px;"></div>
+                <div class="mockup-block" style="height:55px;"></div>
+                <div class="mockup-block" style="height:55px;"></div>
+                <div class="mockup-block" style="background:rgba(255,160,60,0.08);border-color:rgba(255,160,60,0.12);height:55px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="project-info">
+        <div class="project-platform">📱 Cross-Platform</div>
+        <h3>FoodDash — Delivery App</h3>
+        <p>End-to-end food delivery platform with real-time order tracking, restaurant management portal, and driver assignment system.</p>
+        <div class="project-tech">
+          <span>React Native</span><span>TypeScript</span><span>GraphQL</span><span>AWS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SKILLS ==================== -->
+<section class="skills" id="skills">
+  <div class="reveal">
+    <div class="section-label">Tech Arsenal</div>
+    <h2 class="section-title">Skills & Technologies</h2>
+    <p class="section-desc">A deep toolkit refined over 6+ years of building for mobile. Always learning, always shipping.</p>
+  </div>
+  <div class="skills-container">
+    <div>
+      <div class="skill-category reveal">
+        <h3>📱 Mobile Development</h3>
+        <div class="skill-list">
+          <div class="skill-chip"><span class="skill-dot"></span>Kotlin</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Swift</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Jetpack Compose</div>
+          <div class="skill-chip"><span class="skill-dot"></span>SwiftUI</div>
+          <div class="skill-chip"><span class="skill-dot"></span>React Native</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Flutter</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Dart</div>
+          <div class="skill-chip"><span class="skill-dot"></span>UIKit</div>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <h3>⚙️ Backend & Cloud</h3>
+        <div class="skill-list">
+          <div class="skill-chip"><span class="skill-dot"></span>Node.js</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Firebase</div>
+          <div class="skill-chip"><span class="skill-dot"></span>AWS</div>
+          <div class="skill-chip"><span class="skill-dot"></span>GraphQL</div>
+          <div class="skill-chip"><span class="skill-dot"></span>REST APIs</div>
+          <div class="skill-chip"><span class="skill-dot"></span>PostgreSQL</div>
+          <div class="skill-chip"><span class="skill-dot"></span>MongoDB</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Redis</div>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <h3>🛠️ Tools & DevOps</h3>
+        <div class="skill-list">
+          <div class="skill-chip"><span class="skill-dot"></span>Git</div>
+          <div class="skill-chip"><span class="skill-dot"></span>CI/CD</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Fastlane</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Docker</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Figma</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Xcode</div>
+          <div class="skill-chip"><span class="skill-dot"></span>Android Studio</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-terminal reveal">
+      <div class="terminal-header">
+        <span class="terminal-dot terminal-dot-red"></span>
+        <span class="terminal-dot terminal-dot-yellow"></span>
+        <span class="terminal-dot terminal-dot-green"></span>
+        <span class="terminal-title">developer.json</span>
+      </div>
+      <div class="terminal-body">
+        <span class="bracket">{</span><br>
+        &nbsp;&nbsp;<span class="key">"name"</span>: <span class="str">"Alex Morgan"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"role"</span>: <span class="str">"Full-Stack Mobile Dev"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"experience_years"</span>: <span class="num">6</span>,<br>
+        &nbsp;&nbsp;<span class="key">"platforms"</span>: <span class="bracket">[</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"Android"</span>, <span class="str">"iOS"</span><br>
+        &nbsp;&nbsp;<span class="bracket">]</span>,<br>
+        &nbsp;&nbsp;<span class="key">"passion"</span>: <span class="str">"Building apps that<br>&nbsp;&nbsp;&nbsp;&nbsp;make people smile"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"available"</span>: <span class="num">true</span>,<br>
+        &nbsp;&nbsp;<span class="key">"coffee_per_day"</span>: <span class="num">4</span><br>
+        <span class="bracket">}</span><br>
+        <br>
+        <span class="comment">// Let's build something amazing ✨</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EXPERIENCE ==================== -->
+<section class="experience" id="experience">
+  <div class="reveal">
+    <div class="section-label">Journey</div>
+    <h2 class="section-title">Work Experience</h2>
+    <p class="section-desc">A timeline of impactful roles where I've shipped products used by millions.</p>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2023 — Present</div>
+      <h3>Senior Mobile Developer</h3>
+      <div class="timeline-company">TechVista Labs — Remote</div>
+      <p>Leading mobile engineering for a fintech product suite. Architected a modular SDK used across 5 internal apps, reducing dev time by 40%.</p>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2021 — 2023</div>
+      <h3>Mobile Developer</h3>
+      <div class="timeline-company">NovaSoft Inc — San Francisco</div>
+      <p>Shipped 3 consumer apps from 0→1. Built the real-time messaging engine handling 10K+ concurrent users with 99.9% delivery rate.</p>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2019 — 2021</div>
+      <h3>Junior Mobile Developer</h3>
+      <div class="timeline-company">AppForge Studio — New York</div>
+      <p>Developed and maintained 8 client apps across Android and iOS. Introduced automated UI testing that caught 60% more regressions pre-release.</p>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2018 — 2019</div>
+      <h3>Freelance Developer</h3>
+      <div class="timeline-company">Self-Employed</div>
+      <p>Bootstrapped my freelance career building MVP apps for startups. Delivered 12 projects in the first year while building a client network.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TESTIMONIALS ==================== -->
+<section class="testimonials" id="testimonials">
+  <div class="reveal">
+    <div class="section-label">Client Love</div>
+    <h2 class="section-title">What People Say</h2>
+    <p class="section-desc">Don't just take my word for it — here's what clients and collaborators have to say.</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"Alex turned our rough concept into a polished app that our users genuinely love. The attention to detail in every animation and interaction was remarkable."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar" style="background: linear-gradient(135deg, var(--accent), #40e0d0);">SM</div>
+        <div>
+          <div class="testimonial-name">Sarah Mitchell</div>
+          <div class="testimonial-role">CEO, FinFlow</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"Working with Alex was seamless. They understood our technical requirements instantly and delivered ahead of schedule. Our app's store rating jumped from 3.8 to 4.9."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #5078ff, #40a0ff);">JR</div>
+        <div>
+          <div class="testimonial-name">James Rodriguez</div>
+          <div class="testimonial-role">CTO, TrackFit</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"Exceptional full-stack talent. Alex handled everything from the iOS frontend to the cloud infrastructure. Rare to find that breadth with this depth of quality."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar" style="background: linear-gradient(135deg, #c864ff, #ff64a0);">LP</div>
+        <div>
+          <div class="testimonial-name">Lisa Park</div>
+          <div class="testimonial-role">Product Lead, NovaSoft</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section class="contact" id="contact">
+  <div class="reveal">
+    <div class="section-label">Say Hello</div>
+    <h2 class="section-title">Let's Work Together</h2>
+    <p class="section-desc">Have a project in mind? I'm always excited to discuss new ideas and collaborate on innovative mobile experiences.</p>
+  </div>
+  <div class="contact-wrapper">
+    <div class="contact-info reveal">
+      <h3>Get in touch</h3>
+      <p>Whether it's a new app from scratch, a redesign, or ongoing development — I'm here to help bring your mobile vision to life.</p>
+      <div class="contact-channels">
+        <a href="mailto:hello@alexmorgan.dev" class="contact-channel">
+          <div class="contact-channel-icon" style="background: var(--accent-dim);">
+            <svg width="20" height="20" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-channel-label">Email</div>
+            <div class="contact-channel-value">hello@alexmorgan.dev</div>
+          </div>
+        </a>
+        <a href="#" class="contact-channel">
+          <div class="contact-channel-icon" style="background: rgba(80,120,255,0.12);">
+            <svg width="20" height="20" fill="none" stroke="#5078ff" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </div>
+          <div>
+            <div class="contact-channel-label">LinkedIn</div>
+            <div class="contact-channel-value">linkedin.com/in/alexmorgan</div>
+          </div>
+        </a>
+        <a href="#" class="contact-channel">
+          <div class="contact-channel-icon" style="background: rgba(200,100,255,0.12);">
+            <svg width="20" height="20" fill="none" stroke="#c864ff" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </div>
+          <div>
+            <div class="contact-channel-label">GitHub</div>
+            <div class="contact-channel-value">github.com/alexmorgandev</div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form reveal">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" placeholder="john@company.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Project Type</label>
+        <select>
+          <option>Select a service...</option>
+          <option>Android App Development</option>
+          <option>iOS App Development</option>
+          <option>Cross-Platform App</option>
+          <option>Full-Stack Mobile + Backend</option>
+          <option>UI/UX Design</option>
+          <option>App Redesign / Refactor</option>
+          <option>Consulting & Code Review</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Budget Range</label>
+        <select>
+          <option>Select a range...</option>
+          <option>$5K — $10K</option>
+          <option>$10K — $25K</option>
+          <option>$25K — $50K</option>
+          <option>$50K+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tell me about your project</label>
+        <textarea placeholder="Describe your app idea, timeline, and any specific requirements..."></textarea>
+      </div>
+      <button class="form-submit">
+        Send Message →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="footer-copy">© 2026 Alex Morgan. Crafted with ❤️ and too much coffee.</div>
+  <div class="footer-socials">
+    <a href="#" class="footer-social" aria-label="GitHub">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    </a>
+    <a href="#" class="footer-social" aria-label="LinkedIn">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="#" class="footer-social" aria-label="Twitter/X">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <a href="#" class="footer-social" aria-label="Dribbble">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 24C5.385 24 0 18.615 0 12S5.385 0 12 0s12 5.385 12 12-5.385 12-12 12zm10.12-10.358c-.35-.11-3.17-.953-6.384-.438 1.34 3.684 1.887 6.684 1.992 7.308 2.3-1.555 3.936-4.02 4.395-6.87zm-6.115 7.808c-.153-.9-.75-4.032-2.19-7.77l-.066.02c-5.79 2.015-7.86 6.025-8.04 6.4 1.73 1.358 3.92 2.166 6.29 2.166 1.42 0 2.77-.29 4-.82zm-11.62-2.58c.232-.4 3.045-5.055 8.332-6.765.135-.045.27-.084.405-.12-.26-.585-.54-1.167-.832-1.74C7.17 11.775 2.206 11.71 1.756 11.7l-.004.312c0 2.633.998 5.037 2.634 6.855zm-2.42-8.955c.46.008 4.683.026 9.477-1.248-1.698-3.018-3.53-5.558-3.8-5.928-2.868 1.35-5.01 3.99-5.676 7.17zM9.6 2.052c.282.38 2.145 2.914 3.822 6 3.645-1.365 5.19-3.44 5.373-3.702C16.88 2.573 14.53 1.5 12 1.5c-.817 0-1.614.098-2.4.285v.267zm10.335 3.483c-.218.29-1.91 2.493-5.724 4.04.24.49.47.985.68 1.486.08.18.15.36.22.53 3.41-.43 6.8.26 7.14.33-.02-2.42-.88-4.64-2.31-6.38z"/></svg>
+    </a>
+  </div>
+</footer>
+
+<script>
+  // Cursor glow effect
+  const cursorGlow = document.getElementById('cursorGlow');
+  document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.left = e.clientX + 'px';
+    cursorGlow.style.top = e.clientY + 'px';
+  });
+
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Mobile menu toggle
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('active');
+  }
+
+  // Close mobile menu on link click
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.remove('active');
+    });
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // Animate stat numbers
+  function animateCounters() {
+    const stats = document.querySelectorAll('.stat-num');
+    stats.forEach(stat => {
+      const text = stat.textContent;
+      const num = parseInt(text);
+      if (isNaN(num)) return;
+      const suffix = text.replace(/[0-9]/g, '');
+      let current = 0;
+      const increment = Math.ceil(num / 40);
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= num) {
+          current = num;
+          clearInterval(timer);
+        }
+        stat.textContent = current + suffix;
+      }, 30);
+    });
+  }
+
+  // Trigger counter animation when hero is visible
+  const heroObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      setTimeout(animateCounters, 800);
+      heroObserver.disconnect();
+    }
+  });
+  heroObserver.observe(document.querySelector('.hero-stats'));
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
